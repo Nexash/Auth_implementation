@@ -1,34 +1,32 @@
-import 'package:auth_implementation/Service/api_name_service.dart';
+import 'package:auth_implementation/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Network/app_interceptor.dart';
+import 'package:auth_implementation/Service/api_name_service.dart';
+
 import 'package:dio/dio.dart';
 
 class DioClient {
-  static final Dio dio = Dio(
-    BaseOptions(
-      //base url
-      baseUrl: ApiEndPoints.baseUrl,
+  final Dio dio;
 
-      // Timeouts
-      connectTimeout: Duration(seconds: 10),
-      receiveTimeout: Duration(seconds: 10),
-      sendTimeout: Duration(seconds: 10),
+  DioClient._(this.dio);
+  factory DioClient(LocalStorage localStorage) {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiEndPoints.baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        responseType: ResponseType.json,
+        contentType: Headers.jsonContentType,
+        validateStatus: (status) => status != null && status < 500,
+        receiveDataWhenStatusError: true,
+      ),
+    );
+    dio.interceptors.add(AppInterceptor(localStorage));
 
-      // Defailt headers
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-
-      //reponse config
-      responseType: ResponseType.json,
-      contentType: Headers.jsonContentType,
-
-      //Accept status<500
-      validateStatus: (status) {
-        return status != null && status < 500;
-      },
-
-      receiveDataWhenStatusError: true,
-    ),
-  )..interceptors.add(AppInterceptor());
+    return DioClient._(dio);
+  }
 }

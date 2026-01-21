@@ -1,12 +1,12 @@
-import 'package:auth_implementation/Service/api_name_service.dart';
 import 'package:auth_implementation/Modal/Login/login_modal.dart';
 import 'package:auth_implementation/Modal/Register/register_modal.dart';
-import 'package:auth_implementation/Network/dio_client.dart';
+import 'package:auth_implementation/Service/api_name_service.dart';
 import 'package:auth_implementation/Utils/api_exception.dart';
 import 'package:dio/dio.dart';
 
 class AuthService {
-  final Dio _dio = DioClient.dio;
+  final Dio _dio;
+  AuthService(this._dio);
 
   // LOGIN
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -15,6 +15,7 @@ class AuthService {
       final response = await _dio.post(
         ApiEndPoints.login,
         data: loginData.toJson(),
+        options: Options(extra: {'requiresToken': false}),
       );
 
       //--------------------- Print API response here

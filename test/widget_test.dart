@@ -5,26 +5,20 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'package:auth_implementation/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:auth_implementation/main.dart';
+import 'fake_auth_controller.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Landing screen builds correctly', (WidgetTester tester) async {
+    final fakeController = FakeAuthController();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Build our app with the fake controller
+    await tester.pumpWidget(MyApp(authController: fakeController));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Now you can test UI elements
+    expect(find.text('This is the Landing Page'), findsOneWidget);
+    expect(find.text('Sign Up'), findsOneWidget);
   });
 }

@@ -1,0 +1,134 @@
+Dependency injection everywhere
+
+Now, every screen receives the dependencies it needs instead of creating them.
+
+Example:
+
+class LoginScreen extends StatefulWidget {
+  final AuthController authController;
+  const LoginScreen({super.key, required this.authController});
+}
+
+
+UI now only uses the controller, and has no knowledge of Dio or LocalStorage.
+
+Abstracted LocalStorage
+
+UI and services no longer talk directly to SharedPreferences.
+
+We created LocalStorage interface → implemented by SharedPrefsStorage.
+
+Benefits:
+
+Can replace storage easily
+
+Testable
+
+Single source of truth for token
+
+DioClient dependency injection
+
+AuthService now receives Dio from DioClient, which already has the AppInterceptor configured with LocalStorage.
+
+This allows every API request to automatically attach tokens.
+
+AuthService dependency injection
+
+AuthController no longer creates AuthService internally.
+
+AuthService is injected so we can:
+
+Use it across multiple screens
+
+Easily replace it with a fake service in tests
+
+Centralized controller
+
+AuthController is created once in main() and passed down to Landing → Login → Register screens.
+
+UI never creates it.
+
+2️⃣ How Token/Data Flows Across the App
+
+Let’s trace the token flow step by step:
+
+Step 1 — User logs in
+
+User enters email/password → presses “Sign In”
+
+LoginScreen calls:
+
+widget.authController.login(email, password);
+
+Step 2 — AuthController calls AuthService
+final response = await _authService.login(email, password);
+
+
+AuthService sends Dio POST request to login API
+
+Response contains access-token & refresh-token
+
+Step 3 — AuthController saves token locally
+await localStorage.saveToken(response['tokens']['access-token']);
+
+
+localStorage is an instance of SharedPrefsStorage
+
+Token is now persisted in SharedPreferences
+
+AuthController and AuthService never directly manipulate storage; they use abstraction
+
+Step 4 — Interceptor automatically uses token for future requests
+
+All other API calls use the same DioClient instance:
+
+dio.interceptors.add(AppInterceptor(localStorage));
+
+
+Inside the interceptor:
+
+final token = await localStorage.getToken();
+if(token != null) options.headers['Authorization'] = 'Bearer $token';
+
+
+✅ Any request requiring authentication automatically attaches the token.
+
+Step 5 — Token used anywhere in the app
+
+HomeScreen, ProfileScreen, or any API call through AuthService now:
+
+Automatically includes token in headers
+
+Doesn’t need to know where the token comes from
+
+UI only interacts with AuthController for business logic
+
+Step 6 — Logout / Clear Token
+await localStorage.clearAll();
+
+
+Token is removed from SharedPreferences
+
+Interceptor no longer sends token
+
+User is logged out
+
+3️⃣ Flow Diagram
+[User Input] 
+    ↓
+LoginScreen (UI) ---------------------+
+    ↓                                  |
+AuthController                        (Receives token from LocalStorage)
+    ↓
+AuthService (calls API with Dio)
+    ↓
+DioClient (with AppInterceptor)
+    ↓
+[Login API]
+    ↑
+Response: {access-token, refresh-token}
+    ↓
+AuthController saves token → LocalStorage
+    ↓
+Future API requests:
+AppInterceptor reads token → adds to headers automatically

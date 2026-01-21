@@ -5,7 +5,8 @@ import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthController authController;
+  const LoginScreen({super.key, required this.authController});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -13,10 +14,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   bool isPasswordVisible = false;
-  final AuthController _authController = AuthController();
+
   FocusNode emailFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
 
@@ -130,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                       );
                       try {
-                        final bool success = await _authController.login(
+                        final bool success = await widget.authController.login(
                           email: emailController.text.trim(),
                           password: passwordController.text.trim(),
                         );
