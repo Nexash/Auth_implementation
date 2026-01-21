@@ -39,20 +39,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.11, // 30%
+                height: MediaQuery.of(context).size.height * 0.08, // 30%
               ),
 
-              Text(
-                "Aayulogic",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w400,
+              Center(
+                child: Text(
+                  "Aayulogic",
+                  style: TextStyle(
+                    fontFamily: 'EightOne',
+                    color: Colors.white,
+                    fontSize: 40,
+
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Center(
+                child: Text(
+                  "RealHRSoft",
+                  style: TextStyle(
+                    fontFamily: 'EightOne',
+                    color: Colors.white,
+                    fontSize: 40,
+
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
 
-              SizedBox(height: 40),
+              SizedBox(height: 50),
+              Center(
+                child: Text(
+                  "Register",
+                  style: TextStyle(
+                    // fontFamily: 'EightOne',
+                    color: Colors.white,
+                    fontSize: 30,
+
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
 
               Form(
                 key: _formKey,

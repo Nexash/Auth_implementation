@@ -41,7 +41,19 @@ Widget buildTextField({
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.grey, width: 2),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(
+          color: Colors.grey,
+        ), // error but not focused
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.grey, width: 2), // keep grey
+      ),
+      errorStyle: const TextStyle(color: Colors.redAccent), // error text color
     ),
+
     validator: validator,
   );
 }

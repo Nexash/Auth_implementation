@@ -2,9 +2,8 @@ import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/LocalStorage/shared_pref_storage.dart';
 import 'package:auth_implementation/Network/dio_client.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
-import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:auth_implementation/UI/home_screen.dart';
-
+import 'package:auth_implementation/UI/landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +49,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: isLoggedIn ? HomeScreen() : LoginScreen(),
+      home: isLoggedIn ? HomeScreen() : LandingScreen(),
     );
   }
 }

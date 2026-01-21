@@ -53,21 +53,49 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.2, // 30%
+                  height: MediaQuery.of(context).size.height * 0.15, // 30%
                 ),
                 Center(
                   child: Text(
                     "Aayulogic",
                     style: TextStyle(
+                      fontFamily: 'EightOne',
                       color: Colors.white,
                       fontSize: 40,
+
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+
+                Center(
+                  child: Text(
+                    "RealHRSoft",
+                    style: TextStyle(
+                      fontFamily: 'EightOne',
+                      color: Colors.white,
+                      fontSize: 40,
+
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.15, // 30%
+                  height: MediaQuery.of(context).size.height * 0.05, // 30%
                 ),
+                Center(
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      // fontFamily: 'EightOne',
+                      color: Colors.white,
+                      fontSize: 30,
+
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
 
                 Form(
                   key: _formKey,
@@ -79,6 +107,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         hint: "Email",
                         icon: Icons.email,
                         autofocus: false,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Email cannot be empty";
+                          }
+
+                          final emailRegex = RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          );
+                          if (!emailRegex.hasMatch(value)) {
+                            return "Enter a valid email address";
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 15),
 
@@ -89,6 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscure: true,
                         icon: Icons.lock,
                         isVisible: isPasswordVisible,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password cannot be empty";
+                          }
+                          return null;
+                        },
                         onToggleVisibility: () {
                           setState(() {
                             isPasswordVisible = !isPasswordVisible;
