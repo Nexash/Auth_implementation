@@ -21,6 +21,8 @@ class DioClient {
         },
         responseType: ResponseType.json,
         contentType: Headers.jsonContentType,
+
+        //status validation
         validateStatus: (status) => status != null && status < 500,
         receiveDataWhenStatusError: true,
       ),

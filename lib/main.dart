@@ -2,8 +2,11 @@ import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/LocalStorage/shared_pref_storage.dart';
 import 'package:auth_implementation/Network/dio_client.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
-import 'package:auth_implementation/UI/landing_screen.dart';
+import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
+import 'package:auth_implementation/UI/home_screen.dart';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -24,12 +27,21 @@ void main() async {
 
   // thats why my app is taking authcontroller only
   final authController = AuthController(authService, localStorage);
-  runApp(MyApp(authController: authController));
+
+  // Check if user is logged in
+
+  final bool isLoggedIn = await localStorage.isLoggedIn();
+  runApp(
+    MultiProvider(
+      providers: [Provider<AuthController>.value(value: authController)],
+      child: MyApp(isLoggedIn: isLoggedIn),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final AuthController authController;
-  const MyApp({super.key, required this.authController});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +50,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: LandingScreen(authController: authController),
+      home: isLoggedIn ? HomeScreen() : LoginScreen(),
     );
   }
 }

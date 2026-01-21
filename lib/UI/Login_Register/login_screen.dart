@@ -3,10 +3,10 @@ import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
 import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  final AuthController authController;
-  const LoginScreen({super.key, required this.authController});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -33,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authController = context.read<AuthController>();
     return Scaffold(
       backgroundColor: Colors.black,
 
@@ -133,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                       );
                       try {
-                        final bool success = await widget.authController.login(
+                        final bool success = await authController.login(
                           email: emailController.text.trim(),
                           password: passwordController.text.trim(),
                         );

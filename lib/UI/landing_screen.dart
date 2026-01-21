@@ -1,11 +1,9 @@
-import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class LandingScreen extends StatefulWidget {
-  final AuthController authController;
-  const LandingScreen({super.key, required this.authController});
+  const LandingScreen({super.key});
 
   @override
   State<LandingScreen> createState() => _LandingScreenState();
@@ -51,11 +49,7 @@ class _LandingScreenState extends State<LandingScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          LoginScreen(authController: widget.authController),
-                ),
+                MaterialPageRoute(builder: (context) => LoginScreen()),
               );
             },
             style: ElevatedButton.styleFrom(

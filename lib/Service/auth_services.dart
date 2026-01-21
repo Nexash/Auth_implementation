@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:auth_implementation/Modal/Login/Request/login_modal.dart';
 import 'package:auth_implementation/Modal/Register/register_modal.dart';
 import 'package:auth_implementation/Service/api_name_service.dart';
@@ -18,9 +20,24 @@ class AuthService {
         options: Options(extra: {'requiresToken': false}),
       );
 
-      //--------------------- Print API response here
-      print("Login API Response: ${response.data}");
-      return response.data;
+      log("------------------Login API Response1: ${response.data}");
+      log("------------------Login API Response2: ${response.statusCode}");
+
+      switch (response.statusCode) {
+        case 200:
+        case 201:
+          return response.data;
+
+        case 400:
+          throw ApiException(
+            response.data['Error'][0] ?? 'Invalid Credentials',
+          );
+        case 401:
+          throw ApiException(response.data['Error'] > [0] ?? 'Unauthorized');
+
+        default:
+          throw ApiException("default error");
+      }
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

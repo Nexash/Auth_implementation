@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
@@ -7,13 +9,17 @@ class ApiException implements Exception {
   factory ApiException.fromDioError(DioException error) {
     switch (error.type) {
       case DioException.connectionTimeout:
-        return ApiException("connection timeout");
+        log("connection timeout");
+        return ApiException("");
       case DioExceptionType.receiveTimeout:
+        log("server not responding");
         return ApiException("server not responding");
       case DioExceptionType.badResponse:
+        log(error.response?.data["message"] ?? 'server error');
         return ApiException(error.response?.data["message"] ?? 'server error');
       default:
-        return ApiException('Unexpected error occured');
+        log('Unexpected error occured');
+        return ApiException("Can't connect to server.");
     }
   }
 }
