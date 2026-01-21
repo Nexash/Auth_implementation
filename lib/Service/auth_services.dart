@@ -1,4 +1,4 @@
-import 'package:auth_implementation/Modal/Login/login_modal.dart';
+import 'package:auth_implementation/Modal/Login/Request/login_modal.dart';
 import 'package:auth_implementation/Modal/Register/register_modal.dart';
 import 'package:auth_implementation/Service/api_name_service.dart';
 import 'package:auth_implementation/Utils/api_exception.dart';

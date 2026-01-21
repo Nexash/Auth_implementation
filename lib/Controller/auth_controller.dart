@@ -14,7 +14,7 @@ class AuthController {
           response['tokens']['access-token'] != null) {
         final accessToken = response['tokens']['access-token'];
         final refreshToken = response['tokens']['refresh-token'];
-        print(response);
+
         print("Access Token: $accessToken");
         print("Refresh Token: $refreshToken");
         await _localStorage.saveToken(accessToken);
