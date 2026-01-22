@@ -1,8 +1,11 @@
+import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
+import 'package:auth_implementation/Utils/Helpers/login_button.helper.dart';
 import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  late LoginHandler loginHandler;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -36,10 +40,24 @@ class _LoginScreenState extends State<LoginScreen> {
     emailController
         .dispose(); //holds data waiting for user to come back to page if users clicks back
     passwordController
-        .clear(); // instantly clears the field even if user navigates to another page
+        .dispose(); // instantly clears the field even if user navigates to another page
     emailFocus.dispose();
     passwordFocus.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authController = context.read<AuthController>();
+    loginHandler = LoginHandler(
+      formKey: _formKey,
+      emailController: emailController,
+      passwordController: passwordController,
+      emailFocus: emailFocus,
+      passwordFocus: passwordFocus,
+      authController: authController,
+    );
   }
 
   @override
@@ -161,12 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
-                    );
-                  },
+                  onPressed: () => loginHandler.login(context),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 60),
                     shape: RoundedRectangleBorder(
