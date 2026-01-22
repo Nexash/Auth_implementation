@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
@@ -7,19 +5,23 @@ class ApiException implements Exception {
   ApiException(this.message);
 
   factory ApiException.fromDioError(DioException error) {
-    switch (error.type) {
-      case DioException.connectionTimeout:
-        log("connection timeout");
-        return ApiException("Connection timeout.");
-      case DioExceptionType.receiveTimeout:
-        log("server not responding");
-        return ApiException("server not responding.");
-      case DioExceptionType.badResponse:
-        log(error.response?.data["message"] ?? 'Server error.');
-        return ApiException(error.response?.data["message"] ?? 'Server error');
-      default:
-        log('Unexpected error occured');
-        return ApiException("Can't connect to server.");
-    }
+    return switch (error.type) {
+      DioExceptionType.connectionTimeout => ApiException("Connection timeout."),
+      DioExceptionType.receiveTimeout => ApiException("Server not responding."),
+      DioExceptionType.badResponse => switch (error.response?.statusCode) {
+        400 => ApiException(
+          (error.response?.data['error'] as List?)?.first ??
+              "Invalid Credentials",
+        ),
+        401 => ApiException("Unauthorized. Please login again."),
+        403 => ApiException("Forbidden. You don't have access."),
+        404 => ApiException("Not Found. The resource does not exist."),
+        500 => ApiException("Server error. Please try again later."),
+        _ => ApiException(
+          (error.response?.data['message']) ?? "Something went wrong.",
+        ),
+      },
+      _ => ApiException("Can't connect to server"),
+    };
   }
 }

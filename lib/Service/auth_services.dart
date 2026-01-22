@@ -22,21 +22,22 @@ class AuthService {
       log("------------------Login API Response1: ${response.data}");
       log("------------------Login API Response2: ${response.statusCode}");
 
-      switch (response.statusCode) {
-        case 200:
-        case 201:
-          return response.data;
+      // switch (response.statusCode) {
+      //   case 200:
+      //   case 201:
+      //     return response.data;
 
-        case 400:
-          throw ApiException(
-            response.data['Error'][0] ?? 'Invalid Credentials',
-          );
-        case 401:
-          throw ApiException(response.data['Error'][0] ?? 'Unauthorized');
+      //   case 400:
+      //     throw ApiException(
+      //       response.data['Error'][0] ?? 'Invalid Credentials',
+      //     );
+      //   case 401:
+      //     throw ApiException(response.data['Error'][0] ?? 'Unauthorized');
 
-        default:
-          throw ApiException("Something went wrong.");
-      }
+      //   default:
+      //     throw ApiException("Something went wrong.");
+      // }
+      return response.data;
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     } catch (e) {

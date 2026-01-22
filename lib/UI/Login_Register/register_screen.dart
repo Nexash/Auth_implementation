@@ -1,5 +1,6 @@
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
+import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -94,15 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: firstNameController,
                             hint: "First Name",
                             icon: Icons.person,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "First Name Can't be empty";
-                              }
-                              if (value.length < 3) {
-                                return "First name should be greater then 3 characters ";
-                              }
-                              return null;
-                            },
+                            validator: Validators.firstName,
                           ),
                         ),
                         SizedBox(width: 10),
@@ -112,15 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: lastNameController,
                             hint: "Last Name",
                             icon: Icons.person_outline,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Last Name Can't be empty";
-                              }
-                              if (value.length < 3) {
-                                return "Last name should be greater then 3 characters ";
-                              }
-                              return null;
-                            },
+                            validator: Validators.lastName,
                           ),
                         ),
                       ],
@@ -130,15 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: usernameController,
                       hint: "Username",
                       icon: Icons.account_circle,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Username cannot be empty";
-                        }
-                        if (value.length < 5) {
-                          return "Username must be at least 5 characters";
-                        }
-                        return null;
-                      },
+                      validator: Validators.validateUsername,
                     ),
 
                     SizedBox(height: 15),
@@ -147,19 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: emailController,
                       hint: "Email",
                       icon: Icons.email,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email cannot be empty";
-                        }
-                        // Basic email regex
-                        final emailRegex = RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        );
-                        if (!emailRegex.hasMatch(value)) {
-                          return "Enter a valid email address";
-                        }
-                        return null;
-                      },
+                      validator: Validators.validateEmail,
                     ),
 
                     SizedBox(height: 15),
@@ -175,15 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           isPasswordVisible = !isPasswordVisible;
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Password cannot be empty";
-                        }
-                        if (value.length <= 8) {
-                          return "Password must be at least 8 characters";
-                        }
-                        return null;
-                      },
+                      validator: Validators.validatePassword,
 
                       //  if (value == null || value.isEmpty) {
                       //   return "Password cannot be empty";
@@ -257,6 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(width: 10),
                         GestureDetector(
                           onTap: () {
+                            Navigator.pop(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(

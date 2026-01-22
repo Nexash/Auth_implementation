@@ -11,21 +11,16 @@ class AuthController {
   AuthController(this._authService, this._localStorage);
 
   Future<bool> login({required String email, required String password}) async {
-    // 1️⃣ Call API
-
     try {
       final response = await _authService.login(email, password);
-      // 2️⃣ Convert response to model
+
       final loginResponse = LoginResponseModal.fromJson(response);
 
-      // 3️⃣ Save tokens
       await _localStorage.saveToken(loginResponse.tokens.accessToken);
       await _localStorage.saveRefreshToken(loginResponse.tokens.refreshToken);
 
-      // 4️⃣ Save user info
       await _localStorage.saveUser(loginResponse.user);
 
-      // 5️⃣ Mark user as logged in
       await _localStorage.setLoggedIn(true);
 
       // Debug prints

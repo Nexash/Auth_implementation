@@ -1,7 +1,6 @@
-import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Network/app_interceptor.dart';
+import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Utils/api_end_points.dart';
-
 import 'package:dio/dio.dart';
 
 class DioClient {
@@ -22,8 +21,8 @@ class DioClient {
         responseType: ResponseType.json,
         contentType: Headers.jsonContentType,
 
-        //status validation
-        validateStatus: (status) => status != null && status < 500,
+        //this will not let any status below 500 show exceptions
+        // validateStatus: (status) => status != null && status < 500,
         receiveDataWhenStatusError: true,
       ),
     );

@@ -1,9 +1,8 @@
-import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
-import 'package:auth_implementation/UI/home_screen.dart';
+import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
+import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   FocusNode emailFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
+  // late LoginHandler loginHandler;
 
   @override
   void initState() {
@@ -32,8 +32,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    emailController
+        .dispose(); //holds data waiting for user to come back to page if users clicks back
+    passwordController
+        .clear(); // instantly clears the field even if user navigates to another page
+    emailFocus.dispose();
+    passwordFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authController = context.read<AuthController>();
     return Scaffold(
       backgroundColor: Colors.black,
 
@@ -107,19 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         hint: "Email",
                         icon: Icons.email,
                         autofocus: false,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Email cannot be empty";
-                          }
-
-                          final emailRegex = RegExp(
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          );
-                          if (!emailRegex.hasMatch(value)) {
-                            return "Enter a valid email address";
-                          }
-                          return null;
-                        },
+                        validator: Validators.validateEmail,
                       ),
                       SizedBox(height: 15),
 
@@ -130,12 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscure: true,
                         icon: Icons.lock,
                         isVisible: isPasswordVisible,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Password cannot be empty";
-                          }
-                          return null;
-                        },
+                        validator: Validators.validatePassword,
                         onToggleVisibility: () {
                           setState(() {
                             isPasswordVisible = !isPasswordVisible;
@@ -168,41 +161,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () async {
-                    // Validate form first
-                    if (_formKey.currentState!.validate()) {
-                      // Show a loading indicator
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder:
-                            (_) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                      );
-                      try {
-                        final bool success = await authController.login(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                        );
-                        Navigator.pop(context);
-                        if (success == true) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (_) => HomeScreen()),
-                            (route) => false,
-                          );
-                        }
-                      } catch (e) {
-                        Navigator.pop(context);
-                        emailFocus.unfocus();
-                        passwordFocus.unfocus();
-                        // close loader
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(e.toString())));
-                      }
-                    }
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 60),
@@ -230,14 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(width: 10),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterScreen(),
-                          ),
-                        );
-                      },
+                      onTap: () => NavigationHelper.goToRegister(context),
+
                       child: Text(
                         "Sign Up",
                         style: TextStyle(
