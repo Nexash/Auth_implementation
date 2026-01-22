@@ -58,7 +58,10 @@ class _LandingScreenState extends State<LandingScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: Text("Sign Up", style: TextStyle(color: Colors.black)),
+            child: Text(
+              "Login",
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
           ),
           SizedBox(height: 20),
           ElevatedButton(
@@ -74,7 +77,10 @@ class _LandingScreenState extends State<LandingScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: Text("Register", style: TextStyle(color: Colors.black)),
+            child: Text(
+              "Register",
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
           ),
           SizedBox(height: 200),
         ],

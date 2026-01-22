@@ -38,9 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUserData() async {
-    User? user = await authController.localStorage.getUser();
-    String? accessToken = await authController.localStorage.getToken();
-    String? refreshToken = await authController.localStorage.getRefreshToken();
+    User? user = authController.localStorage.getUser();
+    String? accessToken = authController.localStorage.getToken();
+    String? refreshToken = authController.localStorage.getRefreshToken();
 
     setState(() {
       _user = user;
@@ -49,8 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _logout() async {
-    await authController.localStorage.clearAll();
+  void _logout() {
+    authController.localStorage.clearAll();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => LoginScreen()),

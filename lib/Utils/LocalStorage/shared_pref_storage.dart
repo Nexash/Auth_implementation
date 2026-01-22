@@ -19,7 +19,7 @@ class SharedPrefsStorage implements LocalStorage {
 
   // Get access token
   @override
-  Future<String?> getToken() async {
+  String? getToken() {
     return prefs.getString(StorageKeys.token);
   }
 
@@ -30,7 +30,7 @@ class SharedPrefsStorage implements LocalStorage {
 
   // Get refresh token
   @override
-  Future<String?> getRefreshToken() async {
+  String? getRefreshToken() {
     return prefs.getString(StorageKeys.refreshToken);
   }
 
@@ -43,7 +43,7 @@ class SharedPrefsStorage implements LocalStorage {
 
   // Get user info
   @override
-  Future<User?> getUser() async {
+  User? getUser() {
     String? userJson = prefs.getString(StorageKeys.user);
     if (userJson != null) {
       Map<String, dynamic> userMap = jsonDecode(userJson);
@@ -60,13 +60,13 @@ class SharedPrefsStorage implements LocalStorage {
 
   // Get login status
   @override
-  Future<bool> isLoggedIn() async {
+  bool isLoggedIn() {
     return prefs.getBool(StorageKeys.isLoggedIn) ?? false;
   }
 
   // Clear all data (logout)
   @override
-  Future<void> clearAll() async {
-    await prefs.clear();
+  void clearAll() {
+    prefs.clear();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
+import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -256,7 +257,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(width: 10),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
                           },
                           child: Text(
                             "Sign In",

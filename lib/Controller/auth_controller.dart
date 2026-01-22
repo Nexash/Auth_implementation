@@ -49,7 +49,7 @@ class AuthController {
   }
 
   // Optional: Logout
-  Future<void> logout() async {
-    await _localStorage.clearAll();
+  void logout() {
+    _localStorage.clearAll();
   }
 }
