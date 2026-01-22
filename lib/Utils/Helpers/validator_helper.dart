@@ -15,6 +15,9 @@ class Validators {
     if (value == null || value.isEmpty) {
       return "Password cannot be empty";
     }
+    if (value.length <= 8) {
+      return "Password must be atleast 8 character.";
+    }
     return null;
   }
 
