@@ -129,9 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      buildTextField(
+                      CustomTextField(
                         controller: emailController,
-                        focusNode: emailFocus,
+                        // focusNode: emailFocus,
                         hint: "Email",
                         icon: Icons.email,
                         autofocus: false,
@@ -139,19 +139,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 15),
 
-                      buildTextField(
+                      CustomTextField(
                         controller: passwordController,
                         hint: "Password",
-                        focusNode: passwordFocus,
+                        // focusNode: passwordFocus,
                         obscure: true,
                         icon: Icons.lock,
-                        isVisible: isPasswordVisible,
+                        // isVisible: isPasswordVisible,
                         validator: Validators.validatePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            isPasswordVisible = !isPasswordVisible;
-                          });
-                        },
+                        // onToggleVisibility: () {
+                        //   setState(() {
+                        //     isPasswordVisible = !isPasswordVisible;
+                        //   });
+                        // },
                         autofocus: false,
                       ),
                     ],

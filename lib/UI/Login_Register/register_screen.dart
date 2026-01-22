@@ -91,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: buildTextField(
+                          child: CustomTextField(
                             controller: firstNameController,
                             hint: "First Name",
                             icon: Icons.person,
@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(width: 10),
 
                         Expanded(
-                          child: buildTextField(
+                          child: CustomTextField(
                             controller: lastNameController,
                             hint: "Last Name",
                             icon: Icons.person_outline,
@@ -111,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     SizedBox(height: 15),
-                    buildTextField(
+                    CustomTextField(
                       controller: usernameController,
                       hint: "Username",
                       icon: Icons.account_circle,
@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 15),
 
-                    buildTextField(
+                    CustomTextField(
                       controller: emailController,
                       hint: "Email",
                       icon: Icons.email,
@@ -129,17 +129,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 15),
 
-                    buildTextField(
+                    CustomTextField(
                       controller: passwordController,
                       hint: "Password",
                       obscure: true,
                       icon: Icons.lock,
-                      isVisible: isPasswordVisible,
-                      onToggleVisibility: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
+                      // isVisible: isPasswordVisible,
+                      // onToggleVisibility: () {
+                      //   setState(() {
+                      //     isPasswordVisible = !isPasswordVisible;
+                      //   });
+                      // },
                       validator: Validators.validatePassword,
 
                       //  if (value == null || value.isEmpty) {
@@ -158,17 +158,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 15),
 
-                    buildTextField(
+                    CustomTextField(
                       controller: confirmPasswordController,
                       hint: "Confirm Password",
                       obscure: true,
                       icon: Icons.lock,
-                      isVisible: isConfirmPasswordVisible,
-                      onToggleVisibility: () {
-                        setState(() {
-                          isConfirmPasswordVisible = !isConfirmPasswordVisible;
-                        });
-                      },
+                      // isVisible: isConfirmPasswordVisible,
+                      // onToggleVisibility: () {
+                      //   setState(() {
+                      //     isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                      //   });
+                      // },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please confirm your password";
