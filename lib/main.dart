@@ -1,5 +1,5 @@
 import 'package:auth_implementation/Controller/auth_controller.dart';
-import 'package:auth_implementation/LocalStorage/shared_pref_storage.dart';
+import 'package:auth_implementation/Utils/LocalStorage/shared_pref_storage.dart';
 import 'package:auth_implementation/Network/dio_client.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
 import 'package:auth_implementation/UI/home_screen.dart';

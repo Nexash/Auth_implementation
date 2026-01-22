@@ -1,4 +1,4 @@
-import 'package:auth_implementation/LocalStorage/local_storage.dart';
+import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Modal/Login/Response/login_response_modal.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
 import 'package:auth_implementation/Utils/api_exception.dart';

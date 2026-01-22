@@ -1,4 +1,4 @@
-import 'package:auth_implementation/LocalStorage/local_storage.dart';
+import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:dio/dio.dart';
 
 class AppInterceptor extends Interceptor {

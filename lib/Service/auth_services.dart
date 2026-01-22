@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:auth_implementation/Modal/Login/Request/login_modal.dart';
 import 'package:auth_implementation/Modal/Register/register_modal.dart';
-import 'package:auth_implementation/Service/api_name_service.dart';
+import 'package:auth_implementation/Utils/api_end_points.dart';
 import 'package:auth_implementation/Utils/api_exception.dart';
 import 'package:dio/dio.dart';
 
@@ -10,7 +10,6 @@ class AuthService {
   final Dio _dio;
   AuthService(this._dio);
 
-  // LOGIN
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final loginData = LoginModal(email: email, password: password);
@@ -33,13 +32,15 @@ class AuthService {
             response.data['Error'][0] ?? 'Invalid Credentials',
           );
         case 401:
-          throw ApiException(response.data['Error'] > [0] ?? 'Unauthorized');
+          throw ApiException(response.data['Error'][0] ?? 'Unauthorized');
 
         default:
-          throw ApiException("default error");
+          throw ApiException("Something went wrong.");
       }
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
+    } catch (e) {
+      throw ApiException("Something went wrong.");
     }
   }
 

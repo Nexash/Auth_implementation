@@ -10,13 +10,13 @@ class ApiException implements Exception {
     switch (error.type) {
       case DioException.connectionTimeout:
         log("connection timeout");
-        return ApiException("");
+        return ApiException("Connection timeout.");
       case DioExceptionType.receiveTimeout:
         log("server not responding");
-        return ApiException("server not responding");
+        return ApiException("server not responding.");
       case DioExceptionType.badResponse:
-        log(error.response?.data["message"] ?? 'server error');
-        return ApiException(error.response?.data["message"] ?? 'server error');
+        log(error.response?.data["message"] ?? 'Server error.');
+        return ApiException(error.response?.data["message"] ?? 'Server error');
       default:
         log('Unexpected error occured');
         return ApiException("Can't connect to server.");
