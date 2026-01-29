@@ -22,21 +22,6 @@ class AuthService {
       log("------------------Login API Response1: ${response.data}");
       log("------------------Login API Response2: ${response.statusCode}");
 
-      // switch (response.statusCode) {
-      //   case 200:
-      //   case 201:
-      //     return response.data;
-
-      //   case 400:
-      //     throw ApiException(
-      //       response.data['Error'][0] ?? 'Invalid Credentials',
-      //     );
-      //   case 401:
-      //     throw ApiException(response.data['Error'][0] ?? 'Unauthorized');
-
-      //   default:
-      //     throw ApiException("Something went wrong.");
-      // }
       return response.data;
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
@@ -70,6 +55,26 @@ class AuthService {
       return response.data;
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> userData(String accesstokens) async {
+    try {
+      final response = await _dio.get(
+        ApiEndPoints.userData,
+
+        options: Options(headers: {'Authorization': 'Bearer $accesstokens'}),
+      );
+      log("------------------UserData fetch API Response: ${response.data}");
+      log("------------------UserData fetch status:${response.statusCode}");
+
+      return response.data;
+    } on DioException catch (e) {
+      log(e.toString());
+      throw ApiException.fromDioError(e);
+    } catch (e) {
+      log(e.toString());
+      throw ApiException("Something went wrong.");
     }
   }
 }

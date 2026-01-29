@@ -24,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 30, 29, 29),
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(

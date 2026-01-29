@@ -1,3 +1,4 @@
+import 'package:auth_implementation/Utils/Helpers/extract_exception_message_helper.dart';
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
@@ -9,10 +10,7 @@ class ApiException implements Exception {
       DioExceptionType.connectionTimeout => ApiException("Connection timeout."),
       DioExceptionType.receiveTimeout => ApiException("Server not responding."),
       DioExceptionType.badResponse => switch (error.response?.statusCode) {
-        400 => ApiException(
-          (error.response?.data['error'] as List?)?.first ??
-              "Invalid Credentials",
-        ),
+        400 => ApiException(extractExceptionMessageHelper(error)),
         401 => ApiException("Unauthorized. Please login again."),
         403 => ApiException("Forbidden. You don't have access."),
         404 => ApiException("Not Found. The resource does not exist."),

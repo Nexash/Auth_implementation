@@ -30,7 +30,7 @@ class SharedPrefsStorage implements LocalStorage {
 
   // Get refresh token
   @override
-  String? getRefreshToken() {
+  Future<String?> getRefreshToken() async {
     return prefs.getString(StorageKeys.refreshToken);
   }
 

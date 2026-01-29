@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
+import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:auth_implementation/Utils/Helpers/login_button.helper.dart';
 import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
+import 'package:auth_implementation/Utils/loading_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,54 +20,41 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  late LoginHandler loginHandler;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
+  bool _isHandlerReady = false;
 
   FocusNode emailFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
-  // late LoginHandler loginHandler;
+  late LoginHandler loginHandler;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authController = context.read<AuthController>();
+      loginHandler = LoginHandler(authController: authController);
       FocusScope.of(context).unfocus();
+      setState(() {
+        _isHandlerReady = true; // now button can be tapped safely
+      });
     });
   }
 
   @override
   void dispose() {
-    emailController
-        .dispose(); //holds data waiting for user to come back to page if users clicks back
-    passwordController
-        .dispose(); // instantly clears the field even if user navigates to another page
     emailFocus.dispose();
     passwordFocus.dispose();
     super.dispose();
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final authController = context.read<AuthController>();
-    loginHandler = LoginHandler(
-      formKey: _formKey,
-      emailController: emailController,
-      passwordController: passwordController,
-      emailFocus: emailFocus,
-      passwordFocus: passwordFocus,
-      authController: authController,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 30, 29, 29),
 
       body: SafeArea(
         child: GestureDetector(
@@ -131,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       CustomTextField(
                         controller: emailController,
-                        // focusNode: emailFocus,
+
                         hint: "Email",
                         icon: Icons.email,
                         autofocus: false,
@@ -142,16 +133,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       CustomTextField(
                         controller: passwordController,
                         hint: "Password",
-                        // focusNode: passwordFocus,
+
                         obscure: true,
                         icon: Icons.lock,
-                        // isVisible: isPasswordVisible,
+
                         validator: Validators.validatePassword,
-                        // onToggleVisibility: () {
-                        //   setState(() {
-                        //     isPasswordVisible = !isPasswordVisible;
-                        //   });
-                        // },
+
                         autofocus: false,
                       ),
                     ],
@@ -179,13 +166,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => loginHandler.login(context),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
+                  onPressed:
+                      _isHandlerReady
+                          ? () async {
+                            if (!_formKey.currentState!.validate()) return;
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder:
+                                  (_) => Dialog(
+                                    backgroundColor: Colors.transparent,
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Center(child: PulseImageLoader()),
+                                    ),
+                                  ),
+                            );
+                            await Future.delayed(Duration(seconds: 3));
+                            try {
+                              final success = await loginHandler.login(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                              );
+
+                              if (success && context.mounted) {
+                                Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => HomeScreen(),
+                                  ),
+                                  (route) => false,
+                                );
+                                emailController.clear();
+                                passwordController.clear();
+                              }
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                              log(e.toString());
+                              Navigator.pop(context);
+                            }
+                          }
+                          : null,
                   child: const Text(
                     "Sign in",
                     style: TextStyle(color: Colors.black),

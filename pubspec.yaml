@@ -51,4 +51,7 @@ flutter:
     - family: eightone
       fonts:
         - asset: assets/fonts/eightone.ttf
+  assets:
+    - assets/images/
+  
 

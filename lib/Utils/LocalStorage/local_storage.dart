@@ -14,7 +14,7 @@ abstract class LocalStorage {
 
   // Refresh Token
   Future<void> saveRefreshToken(String token);
-  String? getRefreshToken();
+  Future<String?> getRefreshToken();
 
   // User Info
   Future<void> saveUser(User user);

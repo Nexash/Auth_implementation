@@ -1,12 +1,19 @@
-import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
+import 'dart:developer';
+
+import 'package:auth_implementation/Modal/Login/Response/get_userdata_modal.dart';
 import 'package:auth_implementation/Modal/Login/Response/login_response_modal.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
+import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Utils/api_exception.dart';
+import 'package:flutter/material.dart';
 
-class AuthController {
+class AuthController extends ChangeNotifier {
   final AuthService _authService;
   final LocalStorage _localStorage;
   LocalStorage get localStorage => _localStorage;
+  bool isLoading = false;
+  UserData? userdata;
+  String? errorMessage;
 
   AuthController(this._authService, this._localStorage);
 
@@ -38,13 +45,40 @@ class AuthController {
     }
   }
 
-  // Optional: Auto-login check
-  Future<bool> checkLogin() async {
-    return await _localStorage.isLoggedIn();
+  Future<void> getUserData() async {
+    final token = localStorage.getToken();
+    if (token == null) throw 'No token found';
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      final response = await _authService.userData(token);
+      final userJson = response['user'] as Map<String, dynamic>;
+      userdata = UserData.fromJson(userJson);
+    } catch (e) {
+      if (e is ApiException) {
+        log(e.message.toString());
+        errorMessage = e.message;
+      } else {
+        log("unknown error : $e");
+
+        errorMessage = "Something went wrong";
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // Optional: Logout
+  Future<bool> checkLogin() async {
+    return _localStorage.isLoggedIn();
+  }
+
   void logout() {
     _localStorage.clearAll();
+    isLoading = false;
+    userdata = null;
+    errorMessage = null;
+    notifyListeners();
   }
 }

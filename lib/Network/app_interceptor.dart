@@ -1,10 +1,20 @@
+import 'dart:developer';
+
+import 'package:auth_implementation/Controller/auth_controller.dart';
+import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
+import 'package:auth_implementation/Utils/api_end_points.dart';
+import 'package:auth_implementation/main.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 class AppInterceptor extends Interceptor {
+  final Dio dio;
   final LocalStorage localStorage;
+  AuthController? authController;
 
-  AppInterceptor(this.localStorage);
+  AppInterceptor(this.localStorage, this.dio);
+  bool _isRefreshing = false;
   @override
   void onRequest(
     RequestOptions options,
@@ -16,7 +26,7 @@ class AppInterceptor extends Interceptor {
       handler.next(options);
       return;
     }
-    final String? token = await localStorage.getToken();
+    final String? token = localStorage.getToken();
 
     // Add header only if token exists
     if (token != null && token.isNotEmpty) {
@@ -43,7 +53,56 @@ class AppInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final requireToken = err.requestOptions.extra['requiresToken'] ?? true;
+    if (err.response?.statusCode == 401 &&
+        requireToken &&
+        err.requestOptions.path != ApiEndPoints.getnewToken &&
+        !_isRefreshing) {
+      _isRefreshing = true;
+      try {
+        final refreshToken = localStorage.getRefreshToken();
+        final response = await dio.post(
+          ApiEndPoints.getnewToken,
+          data: {"refresh": refreshToken},
+          options: Options(extra: {'requiresToken': false}),
+        );
+        if (response.statusCode == 200) {
+          log("----------This is refresh token success");
+          log("${response.data}");
+        } else {
+          log("cant gey refresh and access token.");
+        }
+        final newAccessToken = response.data["access"];
+        final newRefreshToken = response.data["refresh"];
+
+        await localStorage.saveToken(newAccessToken);
+        await localStorage.saveRefreshToken(newRefreshToken);
+
+        final requestOptions = err.requestOptions;
+        requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+
+        _isRefreshing = false;
+
+        final retryResponse = await dio.fetch(requestOptions);
+        handler.resolve(retryResponse);
+        return;
+      } catch (e) {
+        // authController?.logout();
+        log('********${authController?.errorMessage}');
+        if (navigatorKey.currentState != null) {
+          navigatorKey.currentState!.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => LoginScreen()),
+            (route) => false,
+          );
+        }
+        _isRefreshing = false;
+
+        handler.reject(err);
+        return;
+      }
+    }
+
     print("Errrorrrr------");
     print("Message: ${err.message}");
     print("Status: ${err.response?.statusCode}");

@@ -1,3 +1,4 @@
+import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/Network/app_interceptor.dart';
 import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Utils/api_end_points.dart';
@@ -26,8 +27,16 @@ class DioClient {
         receiveDataWhenStatusError: true,
       ),
     );
-    dio.interceptors.add(AppInterceptor(localStorage));
+    dio.interceptors.add(AppInterceptor(localStorage, dio));
 
     return DioClient._(dio);
+  }
+  void setAuthController(AuthController authController) {
+    // Find the AppInterceptor and set the controller
+    for (var interceptor in dio.interceptors) {
+      if (interceptor is AppInterceptor) {
+        interceptor.authController = authController;
+      }
+    }
   }
 }
