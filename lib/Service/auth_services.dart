@@ -32,10 +32,10 @@ class AuthService {
 
   // REGISTER
   Future<Map<String, dynamic>> register(
-    String username,
     String email,
     String password,
     String confirmPassword,
+    String username,
     String firstName,
     String lastName,
   ) async {
@@ -51,6 +51,7 @@ class AuthService {
       final response = await _dio.post(
         ApiEndPoints.register,
         data: registerdata.toJson(),
+        options: Options(extra: {'requiresToken': false}),
       );
       return response.data;
     } on DioException catch (e) {

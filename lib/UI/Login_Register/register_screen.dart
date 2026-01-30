@@ -1,7 +1,10 @@
+import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
+import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +23,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController lastNameController = TextEditingController();
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
+
+  void registerchecker(BuildContext context) async {
+    final authController = context.read<AuthController>();
+    if (!_formKey.currentState!.validate()) return;
+    showLoadingDialog(context);
+    await Future.delayed(Duration(milliseconds: 100));
+
+    try {
+      final success = await authController.register(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        confirmPassword: confirmPasswordController.text.trim(),
+        username: usernameController.text.trim(),
+        firstname: firstNameController.text.trim(),
+        lastname: lastNameController.text.trim(),
+      );
+
+      if (success == true) {
+        Navigator.pop(context);
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginScreen()),
+          (route) => false,
+        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Register Successful.")));
+        emailController.clear();
+        passwordController.clear();
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,26 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hint: "Password",
                       obscure: true,
                       icon: Icons.lock,
-                      // isVisible: isPasswordVisible,
-                      // onToggleVisibility: () {
-                      //   setState(() {
-                      //     isPasswordVisible = !isPasswordVisible;
-                      //   });
-                      // },
                       validator: Validators.validatePassword,
-
-                      //  if (value == null || value.isEmpty) {
-                      //   return "Password cannot be empty";
-                      // }
-                      // if (value.length < 6) {
-                      //   return "Password must be at least 6 characters";
-                      // }
-                      // // Optional: enforce at least 1 number and 1 special character
-                      // final passwordRegex = RegExp(r'^(?=.*[0-9])(?=.*[!@#\$&*~]).{6,}$');
-                      // if (!passwordRegex.hasMatch(value)) {
-                      //   return "Password must contain a number and a special character";
-                      // }
-                      // return null;
                     ),
 
                     SizedBox(height: 15),
@@ -163,18 +186,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hint: "Confirm Password",
                       obscure: true,
                       icon: Icons.lock,
-                      // isVisible: isConfirmPasswordVisible,
-                      // onToggleVisibility: () {
-                      //   setState(() {
-                      //     isConfirmPasswordVisible = !isConfirmPasswordVisible;
-                      //   });
-                      // },
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please confirm your password";
                         }
                         if (value != passwordController.text) {
-                          return "Passwords do not match";
+                          return "Password do not Match";
                         }
                         return null;
                       },
@@ -186,11 +204,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       alignment: Alignment.center,
                       child: IntrinsicWidth(
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // All fields are valid
-                            }
-                          },
+                          onPressed: () => registerchecker(context),
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(200, 60),
                             shape: RoundedRectangleBorder(

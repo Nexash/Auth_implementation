@@ -8,12 +8,12 @@ part of 'register_modal.dart';
 
 RegisterModal _$RegisterModalFromJson(Map<String, dynamic> json) =>
     RegisterModal(
-      email: json['email'] as String,
       username: json['username'] as String,
+      email: json['email'] as String,
       password: json['password'] as String,
-      confirmPassword: json['confirmPassword'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
+      confirmPassword: json['confirm_password'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
     );
 
 Map<String, dynamic> _$RegisterModalToJson(RegisterModal instance) =>
@@ -21,7 +21,7 @@ Map<String, dynamic> _$RegisterModalToJson(RegisterModal instance) =>
       'username': instance.username,
       'email': instance.email,
       'password': instance.password,
-      'confirmPassword': instance.confirmPassword,
-      'firstName': instance.firstName,
-      'lastName': instance.lastName,
+      'confirm_password': instance.confirmPassword,
+      'first_name': instance.firstName,
+      'last_name': instance.lastName,
     };

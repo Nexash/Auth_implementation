@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:auth_implementation/Modal/Login/Response/get_userdata_modal.dart';
 import 'package:auth_implementation/Modal/Login/Response/login_response_modal.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
-import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:auth_implementation/Utils/API_Utils/api_exception.dart';
+import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
 import 'package:flutter/material.dart';
 
 class AuthController extends ChangeNotifier {
@@ -34,6 +34,38 @@ class AuthController extends ChangeNotifier {
       print("Access Token: ${loginResponse.tokens.accessToken}");
       print("Refresh Token: ${loginResponse.tokens.refreshToken}");
       print("User Info: ${loginResponse.user.toJson()}");
+
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      } else {
+        throw 'Something went wrong';
+      }
+    }
+  }
+
+  Future<bool> register({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String username,
+    required String firstname,
+    required String lastname,
+  }) async {
+    log(
+      "----- $email $password $confirmPassword $username $firstname $lastname",
+    );
+    try {
+      final response = await _authService.register(
+        email,
+        password,
+        confirmPassword,
+        username,
+        firstname,
+        lastname,
+      );
+      log("Register response : $response");
 
       return true;
     } catch (e) {
