@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:auth_implementation/Modal/Login/Request/login_modal.dart';
 import 'package:auth_implementation/Modal/Register/register_modal.dart';
-import 'package:auth_implementation/Utils/api_end_points.dart';
-import 'package:auth_implementation/Utils/api_exception.dart';
+import 'package:auth_implementation/Utils/API_Utils/api_end_points.dart';
+import 'package:auth_implementation/Utils/API_Utils/api_exception.dart';
 import 'package:dio/dio.dart';
 
 class AuthService {
@@ -70,7 +70,7 @@ class AuthService {
 
       return response.data;
     } on DioException catch (e) {
-      log(e.toString());
+      log("********_____${e.toString()}");
       throw ApiException.fromDioError(e);
     } catch (e) {
       log(e.toString());

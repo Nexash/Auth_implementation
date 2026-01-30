@@ -16,17 +16,23 @@ class _PulseImageLoaderState extends State<PulseImageLoader>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
       lowerBound: 0.8,
       upperBound: 1.1,
     )..repeat(reverse: true);
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _controller,
-      child: Image.asset('assets/images/loading.gif', width: 150, height: 150),
+      child: Image.asset('assets/images/loading.gif', width: 250, height: 250),
     );
   }
 }

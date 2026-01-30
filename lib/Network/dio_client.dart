@@ -1,7 +1,7 @@
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/Network/app_interceptor.dart';
 import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
-import 'package:auth_implementation/Utils/api_end_points.dart';
+import 'package:auth_implementation/Utils/API_Utils/api_end_points.dart';
 import 'package:dio/dio.dart';
 
 class DioClient {

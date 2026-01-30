@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:auth_implementation/Controller/auth_controller.dart';
-import 'package:auth_implementation/Modal/Login/Response/login_response_modal.dart';
 import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  User? _user;
+  // User? _user;
   // String? _accessToken;
   // String? _refreshToken;
   bool imageLoaded = false;
@@ -35,24 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Assign the provider once
     if (!mounted) return;
     authController = Provider.of<AuthController>(context, listen: false);
-
-    // // Load user data only once
-    // if (_user == null) {
-    //   _loadUserData();
-    // }
   }
-
-  // Future<void> _loadUserData() async {
-  //   User? user = authController.localStorage.getUser();
-  //   String? accessToken = authController.localStorage.getToken();
-  //   String? refreshToken = await authController.localStorage.getRefreshToken();
-
-  //   setState(() {
-  //     _user = user;
-  //     _accessToken = accessToken;
-  //     _refreshToken = refreshToken;
-  //   });
-  // }
 
   void _logout() {
     authController.logout();
@@ -65,14 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // if (4 == null) {
-    //   return Scaffold(
-
-    //     appBar: AppBar(title: Text("Home")),
-    //     body: Center(child: CircularProgressIndicator()),
-    //   );
-    // }
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 30, 29, 29),
       appBar: AppBar(

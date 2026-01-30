@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
 import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
-import 'package:auth_implementation/Utils/api_end_points.dart';
+import 'package:auth_implementation/Utils/API_Utils/api_end_points.dart';
 import 'package:auth_implementation/main.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +54,13 @@ class AppInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // err.requestOptions it stores
+    // URL / path (/api/user/profile)
+    // HTTP method (GET/POST/etc.)
+    // Headers (Authorization, Content-Type, etc.)
+    // Body / query params
+    // Extra metadata (like requiresToken)
+
     final requireToken = err.requestOptions.extra['requiresToken'] ?? true;
     if (err.response?.statusCode == 401 &&
         requireToken &&

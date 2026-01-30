@@ -5,6 +5,9 @@ class ApiException implements Exception {
   final String message;
   ApiException(this.message);
 
+  @override
+  String toString() => message;
+
   factory ApiException.fromDioError(DioException error) {
     return switch (error.type) {
       DioExceptionType.connectionTimeout => ApiException("Connection timeout."),

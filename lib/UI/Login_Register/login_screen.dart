@@ -1,13 +1,10 @@
-import 'dart:developer';
-
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/ReusableWidgets/text_field.dart';
 import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
 import 'package:auth_implementation/UI/home_screen.dart';
-import 'package:auth_implementation/Utils/Helpers/login_button.helper.dart';
+import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
-import 'package:auth_implementation/Utils/loading_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,23 +22,51 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
-  bool _isHandlerReady = false;
 
   FocusNode emailFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
-  late LoginHandler loginHandler;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authController = context.read<AuthController>();
-      loginHandler = LoginHandler(authController: authController);
       FocusScope.of(context).unfocus();
+
       setState(() {
-        _isHandlerReady = true; // now button can be tapped safely
+        // _isHandlerReady = true;
+        // now button can be tapped safely
       });
     });
+  }
+
+  void loginchecker(BuildContext context) async {
+    final authController = context.read<AuthController>();
+    if (!_formKey.currentState!.validate()) return;
+    showLoadingDialog(context);
+
+    try {
+      final success = await authController.login(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      if (success == true) {
+        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+          (route) => false,
+        );
+        emailController.clear();
+        passwordController.clear();
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   @override
@@ -166,52 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed:
-                      _isHandlerReady
-                          ? () async {
-                            if (!_formKey.currentState!.validate()) return;
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder:
-                                  (_) => Dialog(
-                                    backgroundColor: Colors.transparent,
-                                    child: SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: Center(child: PulseImageLoader()),
-                                    ),
-                                  ),
-                            );
-                            await Future.delayed(Duration(seconds: 3));
-                            try {
-                              final success = await loginHandler.login(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                              );
+                  onPressed: () => loginchecker(context),
 
-                              if (success && context.mounted) {
-                                Navigator.pop(context);
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => HomeScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                                emailController.clear();
-                                passwordController.clear();
-                              }
-                            } catch (e) {
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString())),
-                              );
-                              log(e.toString());
-                              Navigator.pop(context);
-                            }
-                          }
-                          : null,
                   child: const Text(
                     "Sign in",
                     style: TextStyle(color: Colors.black),

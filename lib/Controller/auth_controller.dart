@@ -4,7 +4,7 @@ import 'package:auth_implementation/Modal/Login/Response/get_userdata_modal.dart
 import 'package:auth_implementation/Modal/Login/Response/login_response_modal.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
 import 'package:auth_implementation/Utils/LocalStorage/local_storage.dart';
-import 'package:auth_implementation/Utils/api_exception.dart';
+import 'package:auth_implementation/Utils/API_Utils/api_exception.dart';
 import 'package:flutter/material.dart';
 
 class AuthController extends ChangeNotifier {
@@ -38,7 +38,7 @@ class AuthController extends ChangeNotifier {
       return true;
     } catch (e) {
       if (e is ApiException) {
-        throw e.message;
+        rethrow;
       } else {
         throw 'Something went wrong';
       }
@@ -76,9 +76,6 @@ class AuthController extends ChangeNotifier {
 
   void logout() {
     _localStorage.clearAll();
-    isLoading = false;
-    userdata = null;
-    errorMessage = null;
     notifyListeners();
   }
 }
