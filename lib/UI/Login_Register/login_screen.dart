@@ -26,19 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode emailFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).unfocus();
-
-      setState(() {
-        // _isHandlerReady = true;
-        // now button can be tapped safely
-      });
-    });
-  }
-
   void loginchecker(BuildContext context) async {
     final authController = context.read<AuthController>();
     if (!_formKey.currentState!.validate()) return;
@@ -147,10 +134,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       CustomTextField(
                         controller: emailController,
-
                         hint: "Email",
                         icon: Icons.email,
-                        autofocus: false,
+                        focusNode: emailFocus,
+                        nextFocusNode: passwordFocus,
                         validator: Validators.validateEmail,
                       ),
                       SizedBox(height: 15),
@@ -158,6 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       CustomTextField(
                         controller: passwordController,
                         hint: "Password",
+                        focusNode: passwordFocus,
 
                         obscure: true,
                         icon: Icons.lock,

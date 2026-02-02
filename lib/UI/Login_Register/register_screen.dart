@@ -24,6 +24,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
+  FocusNode emailFocus = FocusNode();
+  FocusNode passwordFocus = FocusNode();
+  FocusNode confirmPasswordFocus = FocusNode();
+  FocusNode usernameFocus = FocusNode();
+  FocusNode firstNameFocus = FocusNode();
+  FocusNode lastNameFocus = FocusNode();
+
   void registerchecker(BuildContext context) async {
     final authController = context.read<AuthController>();
     if (!_formKey.currentState!.validate()) return;
@@ -64,6 +71,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    emailController.dispose();
+    confirmPasswordController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+
+    emailFocus.dispose();
+    passwordFocus.dispose();
+    confirmPasswordFocus.dispose();
+    usernameFocus.dispose();
+    firstNameFocus.dispose();
+    lastNameFocus.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 30, 29, 29),
@@ -71,7 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       body: SafeArea(
         child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
           onTap: () {
             FocusScope.of(context).unfocus();
           },
@@ -138,6 +163,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hint: "First Name",
                             icon: Icons.person,
                             validator: Validators.firstName,
+                            focusNode: firstNameFocus,
+                            nextFocusNode: lastNameFocus,
                           ),
                         ),
                         SizedBox(width: 10),
@@ -148,6 +175,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hint: "Last Name",
                             icon: Icons.person_outline,
                             validator: Validators.lastName,
+                            focusNode: lastNameFocus,
+                            nextFocusNode: usernameFocus,
                           ),
                         ),
                       ],
@@ -158,6 +187,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hint: "Username",
                       icon: Icons.account_circle,
                       validator: Validators.validateUsername,
+                      focusNode: usernameFocus,
+                      nextFocusNode: emailFocus,
                     ),
 
                     SizedBox(height: 15),
@@ -167,6 +198,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hint: "Email",
                       icon: Icons.email,
                       validator: Validators.validateEmail,
+                      focusNode: emailFocus,
+                      nextFocusNode: passwordFocus,
                     ),
 
                     SizedBox(height: 15),
@@ -177,6 +210,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscure: true,
                       icon: Icons.lock,
                       validator: Validators.validatePassword,
+                      focusNode: passwordFocus,
+                      nextFocusNode: confirmPasswordFocus,
                     ),
 
                     SizedBox(height: 15),
@@ -196,6 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
+                      focusNode: confirmPasswordFocus,
                     ),
 
                     SizedBox(height: 15),
@@ -228,12 +264,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(width: 10),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              ),
+                              MaterialPageRoute(builder: (_) => LoginScreen()),
                             );
                           },
                           child: Text(
