@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:auth_implementation/Controller/auth_controller.dart';
-import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
+import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
+import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
+import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +15,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmNewPasswordController = TextEditingController();
+
+  FocusNode oldPasswordFocus = FocusNode();
+  FocusNode newPasswordFocus = FocusNode();
+  FocusNode confirmNewPasswordFocus = FocusNode();
   // User? _user;
   // String? _accessToken;
   // String? _refreshToken;
@@ -34,6 +43,17 @@ class _HomeScreenState extends State<HomeScreen> {
     // Assign the provider once
     if (!mounted) return;
     authController = Provider.of<AuthController>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmNewPasswordController.dispose();
+    newPasswordFocus.dispose();
+    confirmNewPasswordFocus.dispose();
+    oldPasswordFocus.dispose();
+    super.dispose();
   }
 
   void _logout() {
@@ -159,6 +179,169 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: const Color.fromARGB(255, 176, 173, 173),
                             fontSize: 16,
                           ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(170, 30),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  isDismissible: false,
+                                  backgroundColor: const Color.fromARGB(
+                                    255,
+                                    30,
+                                    29,
+                                    29,
+                                  ),
+                                  enableDrag: false,
+                                  builder: (context) {
+                                    return ReusableButtomSheet(
+                                      title: "Change Password",
+                                      initialSize: 0.4,
+                                      minSize: 0.3,
+                                      maxSize: 0.5,
+                                      child: Column(
+                                        children: [
+                                          CustomTextField(
+                                            hint: "Old Password",
+                                            icon: Icons.password,
+                                            controller: oldPasswordController,
+                                            focusNode: oldPasswordFocus,
+                                            nextFocusNode: newPasswordFocus,
+                                          ),
+                                          SizedBox(height: 15),
+                                          CustomTextField(
+                                            hint: "New Password",
+                                            icon: Icons.password,
+                                            controller: newPasswordController,
+                                            focusNode: newPasswordFocus,
+                                            nextFocusNode:
+                                                confirmNewPasswordFocus,
+                                          ),
+                                          SizedBox(height: 15),
+                                          CustomTextField(
+                                            hint: "Confirm New Password",
+                                            icon: Icons.password,
+                                            controller:
+                                                confirmNewPasswordController,
+                                            focusNode: confirmNewPasswordFocus,
+                                          ),
+                                          SizedBox(height: 15),
+
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: Text("Confirm"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Cancel"),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text(
+                                "Change Password",
+                                style: TextStyle(),
+                              ),
+                            ),
+
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(170, 30),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  isDismissible: false,
+                                  backgroundColor: const Color.fromARGB(
+                                    255,
+                                    30,
+                                    29,
+                                    29,
+                                  ),
+                                  enableDrag: false,
+                                  builder: (context) {
+                                    return ReusableButtomSheet(
+                                      title: "Reset Password",
+                                      initialSize: 0.4,
+                                      minSize: 0.3,
+                                      maxSize: 0.5,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Enter your mail to reset password",
+                                            style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                255,
+                                                212,
+                                                207,
+                                                207,
+                                              ),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          CustomTextField(
+                                            hint: "Email",
+                                            icon: Icons.mail,
+                                            controller: oldPasswordController,
+                                            focusNode: oldPasswordFocus,
+                                            nextFocusNode: newPasswordFocus,
+                                          ),
+                                          SizedBox(height: 10),
+
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: Text("Confirm"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Cancel"),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text("Reset Password", style: TextStyle()),
+                            ),
+                          ],
                         ),
                       ],
                     );

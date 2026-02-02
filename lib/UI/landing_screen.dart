@@ -1,5 +1,5 @@
-import 'package:auth_implementation/UI/Login_Register/login_screen.dart';
-import 'package:auth_implementation/UI/Login_Register/register_screen.dart';
+import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
+import 'package:auth_implementation/UI/Login_Register/Register/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class LandingScreen extends StatefulWidget {
