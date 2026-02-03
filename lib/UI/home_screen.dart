@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/Controller/password_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
-import 'package:auth_implementation/UI/Password/otp_screen.dart';
 import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
@@ -24,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController confirmNewPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _mailformKey = GlobalKey<FormState>();
 
   FocusNode oldPasswordFocus = FocusNode();
   FocusNode newPasswordFocus = FocusNode();
@@ -81,53 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
       oldPasswordController.clear();
       newPasswordController.clear();
       confirmNewPasswordController.clear();
-    } finally {
-      Navigator.of(parentContext, rootNavigator: true).pop();
-    }
-  }
-
-  void resetPassword(BuildContext context) async {
-    final passwordController = context.read<PasswordController>();
-    if (!_mailformKey.currentState!.validate()) return;
-    final parentContext = context;
-    showLoadingDialog(parentContext);
-
-    showLoadingDialog(context); // show loader
-
-    try {
-      final success = await passwordController.resetPassword(
-        email: emailController.text.trim(),
-      );
-
-      if (!context.mounted) return;
-
-      Navigator.of(context, rootNavigator: true).pop();
-
-      if (success) {
-        emailController.clear();
-        FocusManager.instance.primaryFocus?.unfocus();
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("OTP sent to email.")));
-          final String email = emailController.text.trim();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => OTPScreen(email: email)),
-          );
-        });
-      }
-    } catch (e) {
-      FocusManager.instance.primaryFocus?.unfocus();
-      final navigator = Navigator.of(parentContext, rootNavigator: true);
-      navigator.pop();
-      navigator.pop();
-
-      ScaffoldMessenger.of(parentContext).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception:', ''))),
-      );
-      emailController.clear();
     } finally {
       Navigator.of(parentContext, rootNavigator: true).pop();
     }
@@ -277,167 +228,76 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                fixedSize: Size(170, 30),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  isDismissible: false,
-                                  backgroundColor: const Color.fromARGB(
-                                    255,
-                                    30,
-                                    29,
-                                    29,
-                                  ),
-                                  enableDrag: false,
-                                  builder: (context) {
-                                    return ReusableButtomSheet(
-                                      title: "Change Password",
-                                      initialSize: 0.4,
-                                      minSize: 0.3,
-                                      maxSize: 0.5,
-                                      child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                          children: [
-                                            CustomTextField(
-                                              validator:
-                                                  Validators.validatePassword,
-                                              hint: "Old Password",
-                                              icon: Icons.password,
-                                              controller: oldPasswordController,
-                                              focusNode: oldPasswordFocus,
-                                              nextFocusNode: newPasswordFocus,
-                                            ),
-                                            SizedBox(height: 15),
-                                            CustomTextField(
-                                              validator:
-                                                  Validators.validatePassword,
-                                              hint: "New Password",
-                                              icon: Icons.password,
-                                              controller: newPasswordController,
-                                              focusNode: newPasswordFocus,
-                                              nextFocusNode:
-                                                  confirmNewPasswordFocus,
-                                            ),
-                                            SizedBox(height: 15),
-                                            CustomTextField(
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return "Please confirm your password";
-                                                }
-                                                if (value !=
-                                                    newPasswordController
-                                                        .text) {
-                                                  return "Password do not Match";
-                                                }
-                                                return null;
-                                              },
-                                              hint: "Confirm New Password",
-                                              icon: Icons.password,
-                                              controller:
-                                                  confirmNewPasswordController,
-                                              focusNode:
-                                                  confirmNewPasswordFocus,
-                                            ),
-                                            SizedBox(height: 15),
-
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    changePassword(context);
-                                                  },
-                                                  child: Text("Confirm"),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text("Cancel"),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Text(
-                                "Change Password",
-                                style: TextStyle(),
+                        Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: Size(170, 30),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                fixedSize: Size(170, 30),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                isDismissible: false,
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  30,
+                                  29,
+                                  29,
                                 ),
-                              ),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  isDismissible: false,
-                                  backgroundColor: const Color.fromARGB(
-                                    255,
-                                    30,
-                                    29,
-                                    29,
-                                  ),
-                                  enableDrag: false,
-                                  builder: (context) {
-                                    return ReusableButtomSheet(
-                                      title: "Reset Password",
-                                      initialSize: 0.4,
-                                      minSize: 0.3,
-                                      maxSize: 0.5,
+                                enableDrag: false,
+                                builder: (context) {
+                                  return ReusableButtomSheet(
+                                    title: "Change Password",
+                                    initialSize: 0.4,
+                                    minSize: 0.3,
+                                    maxSize: 0.5,
+                                    child: Form(
+                                      key: _formKey,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "Enter your mail to reset password",
-                                            style: TextStyle(
-                                              color: const Color.fromARGB(
-                                                255,
-                                                212,
-                                                207,
-                                                207,
-                                              ),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                            ),
+                                          CustomTextField(
+                                            validator:
+                                                Validators.validatePassword,
+                                            hint: "Old Password",
+                                            icon: Icons.password,
+                                            controller: oldPasswordController,
+                                            focusNode: oldPasswordFocus,
+                                            nextFocusNode: newPasswordFocus,
                                           ),
-                                          SizedBox(height: 10),
-                                          Form(
-                                            key: _mailformKey,
-                                            child: CustomTextField(
-                                              validator:
-                                                  Validators.validateEmail,
-                                              hint: "Email",
-                                              icon: Icons.mail,
-                                              controller: emailController,
-                                              focusNode: emailFocus,
-                                            ),
+                                          SizedBox(height: 15),
+                                          CustomTextField(
+                                            validator:
+                                                Validators.validatePassword,
+                                            hint: "New Password",
+                                            icon: Icons.password,
+                                            controller: newPasswordController,
+                                            focusNode: newPasswordFocus,
+                                            nextFocusNode:
+                                                confirmNewPasswordFocus,
                                           ),
-                                          SizedBox(height: 10),
+                                          SizedBox(height: 15),
+                                          CustomTextField(
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Please confirm your password";
+                                              }
+                                              if (value !=
+                                                  newPasswordController.text) {
+                                                return "Password do not Match";
+                                              }
+                                              return null;
+                                            },
+                                            hint: "Confirm New Password",
+                                            icon: Icons.password,
+                                            controller:
+                                                confirmNewPasswordController,
+                                            focusNode: confirmNewPasswordFocus,
+                                          ),
+                                          SizedBox(height: 15),
 
                                           Row(
                                             mainAxisAlignment:
@@ -445,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             children: [
                                               ElevatedButton(
                                                 onPressed: () {
-                                                  resetPassword(context);
+                                                  changePassword(context);
                                                 },
                                                 child: Text("Confirm"),
                                               ),
@@ -459,13 +319,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ],
                                       ),
-                                    );
-                                  },
-                                );
-                              },
-                              child: Text("Reset Password", style: TextStyle()),
-                            ),
-                          ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: Text("Change Password", style: TextStyle()),
+                          ),
                         ),
                       ],
                     );

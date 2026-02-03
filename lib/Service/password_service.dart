@@ -35,7 +35,7 @@ class PasswordService {
   }
 
   Future<Map<String, dynamic>> resetPassword({
-    required String accessToken,
+    // required String accessToken,
     required String email,
   }) async {
     try {
@@ -43,7 +43,7 @@ class PasswordService {
         ApiEndPoints.resetPassword,
         data: {"email": email},
 
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        options: Options(extra: {'requiresToken': false}),
       );
 
       log(response.data['message']);
@@ -59,7 +59,7 @@ class PasswordService {
   }
 
   Future<Map<String, dynamic>> otpResetPassword({
-    required String accessToken,
+    // required String accessToken,
     required String email,
     required String otp,
     required String password,
@@ -74,8 +74,7 @@ class PasswordService {
           "password": password,
           "confirm_password": confirmpassword,
         },
-
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        options: Options(extra: {'requiresToken': false}),
       );
 
       log(response.data['message']);

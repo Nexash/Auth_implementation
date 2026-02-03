@@ -1,5 +1,5 @@
 import 'package:auth_implementation/Controller/password_controller.dart';
-import 'package:auth_implementation/UI/home_screen.dart';
+import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
 import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
@@ -47,7 +47,7 @@ class _OTPScreenState extends State<OTPScreen> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => HomeScreen()),
+            MaterialPageRoute(builder: (_) => LoginScreen()),
           );
         });
       }

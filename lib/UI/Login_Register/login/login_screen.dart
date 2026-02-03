@@ -1,9 +1,12 @@
 import 'package:auth_implementation/Controller/auth_controller.dart';
+import 'package:auth_implementation/Controller/password_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/Register/register_screen.dart';
+import 'package:auth_implementation/UI/Password/otp_screen.dart';
 import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
+import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
+  final _mailformKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -53,6 +56,53 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  void resetPassword(BuildContext context) async {
+    final passwordController = context.read<PasswordController>();
+    if (!_mailformKey.currentState!.validate()) return;
+    final parentContext = context;
+    showLoadingDialog(parentContext);
+
+    showLoadingDialog(context); // show loader
+
+    try {
+      final success = await passwordController.resetPassword(
+        email: emailController.text.trim(),
+      );
+
+      if (!context.mounted) return;
+
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (success) {
+        FocusManager.instance.primaryFocus?.unfocus();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("OTP sent to email.")));
+          final String email = emailController.text.trim();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => OTPScreen(email: email)),
+          );
+          emailController.clear();
+        });
+      }
+    } catch (e) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      final navigator = Navigator.of(parentContext, rootNavigator: true);
+      navigator.pop();
+      navigator.pop();
+
+      ScaffoldMessenger.of(parentContext).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception:', ''))),
+      );
+      emailController.clear();
+    } finally {
+      Navigator.of(parentContext, rootNavigator: true).pop();
     }
   }
 
@@ -167,12 +217,85 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                   child: Center(
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 199, 195, 195),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          isDismissible: false,
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            30,
+                            29,
+                            29,
+                          ),
+                          enableDrag: false,
+                          builder: (context) {
+                            return ReusableButtomSheet(
+                              title: "Reset Password",
+                              initialSize: 0.4,
+                              minSize: 0.3,
+                              maxSize: 0.5,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Enter your mail to reset password",
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                        255,
+                                        212,
+                                        207,
+                                        207,
+                                      ),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Form(
+                                    key: _mailformKey,
+                                    child: CustomTextField(
+                                      validator: Validators.validateEmail,
+                                      hint: "Email",
+                                      icon: Icons.mail,
+                                      controller: emailController,
+                                      focusNode: emailFocus,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          resetPassword(context);
+                                        },
+                                        child: Text("Confirm"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("Cancel"),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 199, 195, 195),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

@@ -56,10 +56,10 @@ class PasswordController extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     try {
-      final token = localStorage.getToken();
-      if (token == null) throw 'No token found';
+      // final token = localStorage.getToken();
+      // if (token == null) throw 'No token found';
       final response = await _passwordService.resetPassword(
-        accessToken: token,
+        // accessToken: token,
         email: email,
       );
       log(response['message']);
@@ -92,11 +92,11 @@ class PasswordController extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     try {
-      final token = localStorage.getToken();
+      // final token = localStorage.getToken();
 
-      if (token == null) throw 'No token found';
+      // if (token == null) throw 'No token found';
       final response = await _passwordService.otpResetPassword(
-        accessToken: token,
+        // accessToken: token,
         email: email,
         otp: otp,
         password: password,
