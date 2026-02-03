@@ -81,4 +81,44 @@ class PasswordController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> otpResetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String confirm_password,
+  }) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      final token = localStorage.getToken();
+
+      if (token == null) throw 'No token found';
+      final response = await _passwordService.otpResetPassword(
+        accessToken: token,
+        email: email,
+        otp: otp,
+        password: password,
+        confirmpassword: confirm_password,
+      );
+      log(response['message']);
+      log("successssssssssssssssssssssssss-------------");
+
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        log(e.message.toString());
+
+        throw Exception(e.message);
+      } else {
+        log("unknown error : $e");
+
+        throw Exception("Something went wrong");
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 }

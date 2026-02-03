@@ -57,4 +57,17 @@ class Validators {
     }
     return null;
   }
+
+  static String? otp(String? value) {
+    if (value == null || value.isEmpty) {
+      return "OTP is empty";
+    }
+    if (value.length != 6) {
+      return "OTP should have 6 digits";
+    }
+    if (!RegExp(r'^\d{6}$').hasMatch(value)) {
+      return "OTP should contain numbers only";
+    }
+    return null;
+  }
 }

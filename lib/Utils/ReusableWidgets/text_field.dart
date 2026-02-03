@@ -8,6 +8,7 @@ class CustomTextField extends StatefulWidget {
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final TextEditingController? controller;
+  final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   // final VoidCallback? onSubmitted;
 
@@ -16,6 +17,7 @@ class CustomTextField extends StatefulWidget {
     required this.hint,
     required this.icon,
     this.obscure = false,
+    this.keyboardType,
     this.autofocus = false,
     required this.controller,
     this.validator,
@@ -57,6 +59,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: widget.obscure && !_isVisible,
       autofocus: widget.autofocus,
       validator: widget.validator,
+      keyboardType: widget.keyboardType,
 
       // textInputAction:
       //     widget.nextFocusNode != null

@@ -111,10 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text("OTP sent to email.")));
-
+          final String email = emailController.text.trim();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => OTPScreen()),
+            MaterialPageRoute(builder: (_) => OTPScreen(email: email)),
           );
         });
       }
@@ -124,9 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
       navigator.pop();
       navigator.pop();
 
-      ScaffoldMessenger.of(
-        parentContext,
-      ).showSnackBar(SnackBar(content: Text("The email is not registered.")));
+      ScaffoldMessenger.of(parentContext).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception:', ''))),
+      );
       emailController.clear();
     } finally {
       Navigator.of(parentContext, rootNavigator: true).pop();
