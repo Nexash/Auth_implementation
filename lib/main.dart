@@ -1,6 +1,8 @@
 import 'package:auth_implementation/Controller/auth_controller.dart';
+import 'package:auth_implementation/Controller/password_controller.dart';
 import 'package:auth_implementation/Network/dio_client.dart';
 import 'package:auth_implementation/Service/auth_services.dart';
+import 'package:auth_implementation/Service/password_service.dart';
 import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:auth_implementation/UI/landing_screen.dart';
 import 'package:auth_implementation/Utils/LocalStorage/shared_pref_storage.dart';
@@ -18,10 +20,14 @@ void main() async {
 
   final dioClient = DioClient(localStorage);
   final authService = AuthService(dioClient.dio);
+  final passwordService = PasswordService(dioClient.dio);
+
+  final passwordController = PasswordController(passwordService, localStorage);
 
   final authController = AuthController(authService, localStorage);
   //  Inject AuthController into Dio interceptor after auth controller is made
   dioClient.setAuthController(authController);
+  dioClient.setPasswordController(passwordController);
 
   // Check if user is logged in
 
@@ -29,6 +35,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider<PasswordController>.value(
+          value: passwordController,
+        ),
         ChangeNotifierProvider<AuthController>.value(value: authController),
       ],
       child: MyApp(isLoggedIn: isLoggedIn),

@@ -78,4 +78,23 @@ class AuthService {
       throw ApiException("Something went wrong.");
     }
   }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String accessToken,
+    required String oldPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    final response = await _dio.put(
+      ApiEndPoints.changePassword,
+      data: {
+        "old_password": oldPassword,
+        "new_password": newPassword,
+        "confirm_new_password": confirmNewPassword,
+      },
+
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+    );
+    return response.data as Map<String, dynamic>;
+  }
 }

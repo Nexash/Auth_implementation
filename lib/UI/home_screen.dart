@@ -1,7 +1,11 @@
 import 'dart:developer';
 
 import 'package:auth_implementation/Controller/auth_controller.dart';
+import 'package:auth_implementation/Controller/password_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
+import 'package:auth_implementation/UI/Password/otp_screen.dart';
+import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
+import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +22,15 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmNewPasswordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _mailformKey = GlobalKey<FormState>();
 
   FocusNode oldPasswordFocus = FocusNode();
   FocusNode newPasswordFocus = FocusNode();
   FocusNode confirmNewPasswordFocus = FocusNode();
-  // User? _user;
-  // String? _accessToken;
-  // String? _refreshToken;
+  FocusNode emailFocus = FocusNode();
+
   bool imageLoaded = false;
 
   late AuthController authController;
@@ -35,6 +41,96 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       authController.getUserData();
     });
+  }
+
+  void changePassword(BuildContext context) async {
+    final passwordController = context.read<PasswordController>();
+    if (!_formKey.currentState!.validate()) return;
+    final parentContext = context;
+    showLoadingDialog(parentContext);
+
+    try {
+      final success = await passwordController.changePassword(
+        oldPassword: oldPasswordController.text.trim(),
+        newPassword: newPasswordController.text.trim(),
+        confirmNewPassword: confirmNewPasswordController.text.trim(),
+      );
+
+      if (success == true) {
+        //keyboard unfocus
+        FocusManager.instance.primaryFocus?.unfocus();
+        final navigator = Navigator.of(parentContext, rootNavigator: true);
+
+        navigator.pop(); // close loading
+
+        ScaffoldMessenger.of(parentContext).showSnackBar(
+          SnackBar(content: Text("Password successfully changed.")),
+        );
+        oldPasswordController.clear();
+        newPasswordController.clear();
+        confirmNewPasswordController.clear();
+      }
+    } catch (e) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      final navigator = Navigator.of(parentContext, rootNavigator: true);
+      navigator.pop(); // close loading
+
+      ScaffoldMessenger.of(parentContext).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception:', ''))),
+      );
+      oldPasswordController.clear();
+      newPasswordController.clear();
+      confirmNewPasswordController.clear();
+    } finally {
+      Navigator.of(parentContext, rootNavigator: true).pop();
+    }
+  }
+
+  void resetPassword(BuildContext context) async {
+    final passwordController = context.read<PasswordController>();
+    if (!_mailformKey.currentState!.validate()) return;
+    final parentContext = context;
+    showLoadingDialog(parentContext);
+
+    showLoadingDialog(context); // show loader
+
+    try {
+      final success = await passwordController.resetPassword(
+        email: emailController.text.trim(),
+      );
+
+      if (!context.mounted) return;
+
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (success) {
+        emailController.clear();
+        FocusManager.instance.primaryFocus?.unfocus();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("OTP sent to email.")));
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => OTPScreen()),
+          );
+        });
+      }
+    } catch (e) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      final navigator = Navigator.of(parentContext, rootNavigator: true);
+      navigator.pop();
+      navigator.pop();
+
+      ScaffoldMessenger.of(
+        parentContext,
+      ).showSnackBar(SnackBar(content: Text("The email is not registered.")));
+      emailController.clear();
+    } finally {
+      Navigator.of(parentContext, rootNavigator: true).pop();
+    }
   }
 
   @override
@@ -56,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void _logout() {
+  void logout() {
     authController.logout();
     Navigator.pushAndRemoveUntil(
       context,
@@ -86,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(Icons.logout),
             color: const Color.fromARGB(255, 176, 173, 173),
-            onPressed: _logout,
+            onPressed: logout,
           ),
         ],
       ),
@@ -209,51 +305,73 @@ class _HomeScreenState extends State<HomeScreen> {
                                       initialSize: 0.4,
                                       minSize: 0.3,
                                       maxSize: 0.5,
-                                      child: Column(
-                                        children: [
-                                          CustomTextField(
-                                            hint: "Old Password",
-                                            icon: Icons.password,
-                                            controller: oldPasswordController,
-                                            focusNode: oldPasswordFocus,
-                                            nextFocusNode: newPasswordFocus,
-                                          ),
-                                          SizedBox(height: 15),
-                                          CustomTextField(
-                                            hint: "New Password",
-                                            icon: Icons.password,
-                                            controller: newPasswordController,
-                                            focusNode: newPasswordFocus,
-                                            nextFocusNode:
-                                                confirmNewPasswordFocus,
-                                          ),
-                                          SizedBox(height: 15),
-                                          CustomTextField(
-                                            hint: "Confirm New Password",
-                                            icon: Icons.password,
-                                            controller:
-                                                confirmNewPasswordController,
-                                            focusNode: confirmNewPasswordFocus,
-                                          ),
-                                          SizedBox(height: 15),
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                          children: [
+                                            CustomTextField(
+                                              validator:
+                                                  Validators.validatePassword,
+                                              hint: "Old Password",
+                                              icon: Icons.password,
+                                              controller: oldPasswordController,
+                                              focusNode: oldPasswordFocus,
+                                              nextFocusNode: newPasswordFocus,
+                                            ),
+                                            SizedBox(height: 15),
+                                            CustomTextField(
+                                              validator:
+                                                  Validators.validatePassword,
+                                              hint: "New Password",
+                                              icon: Icons.password,
+                                              controller: newPasswordController,
+                                              focusNode: newPasswordFocus,
+                                              nextFocusNode:
+                                                  confirmNewPasswordFocus,
+                                            ),
+                                            SizedBox(height: 15),
+                                            CustomTextField(
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Please confirm your password";
+                                                }
+                                                if (value !=
+                                                    newPasswordController
+                                                        .text) {
+                                                  return "Password do not Match";
+                                                }
+                                                return null;
+                                              },
+                                              hint: "Confirm New Password",
+                                              icon: Icons.password,
+                                              controller:
+                                                  confirmNewPasswordController,
+                                              focusNode:
+                                                  confirmNewPasswordFocus,
+                                            ),
+                                            SizedBox(height: 15),
 
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () {},
-                                                child: Text("Confirm"),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text("Cancel"),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    changePassword(context);
+                                                  },
+                                                  child: Text("Confirm"),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Cancel"),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -308,12 +426,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                           SizedBox(height: 10),
-                                          CustomTextField(
-                                            hint: "Email",
-                                            icon: Icons.mail,
-                                            controller: oldPasswordController,
-                                            focusNode: oldPasswordFocus,
-                                            nextFocusNode: newPasswordFocus,
+                                          Form(
+                                            key: _mailformKey,
+                                            child: CustomTextField(
+                                              validator:
+                                                  Validators.validateEmail,
+                                              hint: "Email",
+                                              icon: Icons.mail,
+                                              controller: emailController,
+                                              focusNode: emailFocus,
+                                            ),
                                           ),
                                           SizedBox(height: 10),
 
@@ -322,7 +444,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
                                               ElevatedButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  resetPassword(context);
+                                                },
                                                 child: Text("Confirm"),
                                               ),
                                               ElevatedButton(

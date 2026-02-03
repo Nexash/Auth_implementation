@@ -102,6 +102,43 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      final token = localStorage.getToken();
+      if (token == null) throw 'No token found';
+      final response = await _authService.changePassword(
+        accessToken: token,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        confirmNewPassword: confirmNewPassword,
+      );
+      log(response['message']);
+
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        log(e.message.toString());
+        errorMessage = e.message;
+      } else {
+        log("unknown error : $e");
+
+        errorMessage = "Something went wrong";
+        return false;
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
   Future<bool> checkLogin() async {
     return _localStorage.isLoggedIn();
   }
