@@ -2,13 +2,13 @@ import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/Controller/password_controller.dart';
 import 'package:auth_implementation/UI/Login_Register/Register/register_screen.dart';
 import 'package:auth_implementation/UI/Password/otp_screen.dart';
-import 'package:auth_implementation/UI/home_screen.dart';
 import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/login_register_nav_helper.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,11 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success == true) {
         Navigator.pop(context);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
-          (route) => false,
-        );
+        GoRouter.of(context).go('/homeScreen');
         emailController.clear();
         passwordController.clear();
       }

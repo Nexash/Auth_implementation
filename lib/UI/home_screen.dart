@@ -2,12 +2,12 @@ import 'dart:developer';
 
 import 'package:auth_implementation/Controller/auth_controller.dart';
 import 'package:auth_implementation/Controller/password_controller.dart';
-import 'package:auth_implementation/UI/Login_Register/login/login_screen.dart';
 import 'package:auth_implementation/Utils/GlobalAccess/show_loading_dialog.dart';
 import 'package:auth_implementation/Utils/Helpers/validator_helper.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/buttom_sheet.dart';
 import 'package:auth_implementation/Utils/ReusableWidgets/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -105,11 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void logout() {
     authController.logout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => LoginScreen()),
-      (route) => false,
-    );
+    GoRouter.of(context).go('/loginScreen');
   }
 
   @override
